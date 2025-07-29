@@ -58,6 +58,18 @@ function fromCell(value) {
   return backward(17 + value | 0);
 }
 
+function loadSource(staticSize) {
+  return forward(32 + staticSize | 0) + ">>,[>,]<[<]<" + backward(32 + staticSize | 0);
+}
+
+function toStack(staticSize) {
+  return forward(32 + staticSize | 0) + ">>[>]";
+}
+
+function fromStack(staticSize) {
+  return "<[<]<" + backward(32 + staticSize | 0);
+}
+
 var cellToBinary = "<[-]>[<+>[-]]<[->+<]>";
 
 function buildStaticData(regions) {
@@ -352,6 +364,44 @@ function _and(operand) {
           ].join("");
 }
 
+function push(value, staticSizeOpt) {
+  var staticSize = staticSizeOpt !== undefined ? staticSizeOpt : 0;
+  return [
+            toStack(staticSize),
+            ">>[>>]+>",
+            bfInt(value),
+            "<[<<]",
+            fromStack(staticSize)
+          ].join("");
+}
+
+function pop(register, staticSizeOpt) {
+  var staticSize = staticSizeOpt !== undefined ? staticSizeOpt : 0;
+  return [
+            forward(3),
+            forward(3).repeat(register),
+            clearCell,
+            backward(3),
+            backward(3).repeat(register),
+            toStack(staticSize),
+            ">>[>>]<",
+            bracketLeft,
+            "<[<<]",
+            fromStack(staticSize),
+            forward(3),
+            forward(3).repeat(register),
+            increment(1),
+            backward(3),
+            backward(3).repeat(register),
+            toStack(staticSize),
+            ">>[>>]<",
+            decrement(1),
+            bracketRight,
+            "<-<<[<<]",
+            fromStack(staticSize)
+          ].join("");
+}
+
 var print = ".";
 
 var input = ",";
@@ -372,6 +422,9 @@ export {
   clearCell ,
   toCell ,
   fromCell ,
+  loadSource ,
+  toStack ,
+  fromStack ,
   cellToBinary ,
   buildStaticData ,
   mov ,
@@ -379,5 +432,7 @@ export {
   sub ,
   mul ,
   _and ,
+  push ,
+  pop ,
 }
 /* No side effect */

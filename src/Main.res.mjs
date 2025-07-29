@@ -2,44 +2,23 @@
 
 import * as Brainfuck from "./Brainfuck.res.mjs";
 
-var match = Brainfuck.buildStaticData([
-      [
-        "var1",
-        [21]
-      ],
-      [
-        "myStr",
-        Brainfuck.toCharCodes("hello")
-      ],
-      [
-        "name",
-        Brainfuck.toCharCodes("Mary!")
-      ]
-    ]);
+var match = Brainfuck.buildStaticData([]);
+
+var totalSize = match[2];
 
 var sdBf = match[1];
 
+var staticData = match[0];
+
+console.log("Static Data", staticData);
+
 var instruction = [
     sdBf,
-    Brainfuck.mov({
-          TAG: "Value",
-          _0: 20
-        }, 1),
-    Brainfuck.mov({
-          TAG: "Value",
-          _0: 1
-        }, 0),
-    Brainfuck._and({
-          TAG: "Register",
-          _0: 1
-        })
+    Brainfuck.loadSource(totalSize),
+    Brainfuck.push(48, totalSize)
   ].join("\n");
 
 console.log(instruction);
-
-var staticData = match[0];
-
-var totalSize = match[2];
 
 export {
   staticData ,

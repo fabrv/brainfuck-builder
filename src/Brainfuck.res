@@ -32,6 +32,9 @@ let clearCell = "[-]"
 
 let toCell = value => forward(17 + value)
 let fromCell = value => backward(17 + value)
+let loadSource = (staticSize: int) => forward(32 + staticSize) ++ ">>,[>,]<[<]<" ++ backward(32 + staticSize)
+let toStack = (staticSize: int): bf => forward(32 + staticSize) ++ ">>[>]"
+let fromStack = (staticSize: int) : bf => "<[<]<" ++ backward(32 + staticSize)
 
 let cellToBinary = "<[-]>[<+>[-]]<[->+<]>"
 
@@ -315,4 +318,40 @@ let _and = (operand: operand): bf => {
       ">>[>+<-]<<",
     ]->Array.join("")
   }
+}
+
+let push = (value: int, ~staticSize: int = 0): bf => {
+  [
+    toStack(staticSize),
+    ">>[>>]+>",
+    bfInt(value),
+    "<[<<]",
+    fromStack(staticSize)
+  ]->Array.join("")
+}
+
+let pop = (~register: register, ~staticSize: int = 0): bf => {
+  [
+    forward(3),
+    forward(3)->repeat(register),
+    clearCell,
+    backward(3),
+    backward(3)->repeat(register),
+    toStack(staticSize),
+    ">>[>>]<",
+    bracketLeft,
+    "<[<<]",
+    fromStack(staticSize),
+    forward(3),
+    forward(3)->repeat(register),
+    increment(1),
+    backward(3),
+    backward(3)->repeat(register),
+    toStack(staticSize),
+    ">>[>>]<",
+    decrement(1),
+    bracketRight,
+    "<-<<[<<]",
+    fromStack(staticSize)
+  ]->Array.join("")
 }
